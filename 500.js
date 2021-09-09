@@ -6,7 +6,7 @@ var games = [
     [[[6, 9], [8, 12]], [[7, 2], [10, 11]], [[3, 1], [5, 4]]],//w2
     [[[4, 3], [9, 11]], [[1, 2], [7, 10]], [[5, 8], [6, 12]]],//w3
     [[[7, 3], [9, 5]], [[8, 10], [11, 4]], [[12, 1], [2, 6]]],//w4
-    // [[[12, 11], [3, 2]], [[10, 9], [8, 1]], [[7, 5], [4, 6]]]//w5
+    [[[12, 11], [3, 2]], [[10, 9], [8, 1]], [[7, 5], [4, 6]]]//w5
 ]
 
 var Wins = [
@@ -14,7 +14,7 @@ var Wins = [
     [[[1], [0]], [[0], [1]], [[0], [1]]],//w2
     [[[1], [0]], [[1], [0]], [[1], [0]]],//w3
     [[[0], [1]], [[0], [1]], [[1], [0]]],//w4
-    // [[[0], [0]], [[0], [0]], [[0], [0]]]//w5
+    [[[0], [0]], [[0], [0]], [[0], [0]]]//w5
 ]
 var players = {
     1: {
@@ -108,6 +108,7 @@ for (var i = 0; i < games.length; i++) {
         players[games[i][j][1][1]].team.push(games[i][j][1][0]);
     }
 }
+
 scoreArry = [];
 for (var i = 1; i <= 12; i++) {
     for (var j = 1; j <= 12; j++) {
@@ -132,7 +133,7 @@ for (var i = 1; i <= 12; i++) {
 }
 console.log("Calculating...")
 function checkAlreadyRunOp(i, j, k, l) { // reduce dups
-    //5,4,3,2
+    //5,4,3,6
     //[i,j,l,k] 5,4,2,3    k>l
     //[j,i,k,l]4,5,3,2  i>j
     //[j,i,l,k]4,5,2,3 i>j && k>l
@@ -159,7 +160,7 @@ function checkAlreadyRunOp(i, j, k, l) { // reduce dups
     return false;
 }
 function getScore(player, a, b, c) {
-    var checky = 0; // increase this if no value - blocks one person over play another
+    var checky = 1; // increase this if no value - blocks one person over play another
     var score = 0;
     var aT = 0;
     var bT = 0;
@@ -188,25 +189,19 @@ function getScore(player, a, b, c) {
     for (var i = 0; i < player.team.length; i++) {
         if (player.team[i] === a) {
             score = score - 1000000000000;
-            if (aT > checky) {
-                score = score - 1000000000000;
-            }
+            
             aT++;
         } else if (player.team[i] === b) {
             score = score + 1;
-            if (bT > checky) {
-                score = score - 1000000000000;
-            }
+            
             bT++;
         } else if (player.team[i] === c) {
             score = score + 1;
-            if (cT > checky) {
-                score = score - 1000000000000;
-            }
+            
             cT++;
         }
     }
-    return score;
+    return score; //could of gone score>0?Math.exp(score):score
 }
 
 function check(a, b, c) {
