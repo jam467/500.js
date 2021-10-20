@@ -6,7 +6,13 @@ var games = [
     [[[6, 9], [8, 12]], [[7, 2], [10, 11]], [[3, 1], [5, 4]]],//w2
     [[[4, 3], [9, 11]], [[1, 2], [7, 10]], [[5, 8], [6, 12]]],//w3
     [[[7, 3], [9, 5]], [[8, 10], [11, 4]], [[12, 1], [2, 6]]],//w4
-    [[[12, 11], [3, 2]], [[10, 9], [8, 1]], [[7, 5], [4, 6]]]//w5
+    [[[12, 11], [3, 2]], [[10, 9], [8, 1]], [[7, 5], [4, 6]]],//w5
+    [[[1, 10], [3, 6]], [[4, 12], [7, 8]], [[2, 9], [5, 11]]], //w6
+    [[[1, 9], [2, 4]], [[5, 10], [7, 12]], [[3, 11], [6, 8]]], //w7
+    [[[1, 5], [8, 11]], [[3, 9], [6, 10]], [[2, 12], [4, 7]]], //w8
+    [[[1, 4], [3, 12]], [[7, 11], [8, 9]], [[2, 10], [5, 6]]], //w9
+    [[[1, 7], [9, 12]], [[4, 10], [6, 11]], [[2, 8], [3, 5]]],//w10
+    [[[1, 6], [4, 8]], [[3, 10], [7, 9]], [[2, 11], [5, 12]]]
 ]
 
 var Wins = [
@@ -14,7 +20,13 @@ var Wins = [
     [[[1], [0]], [[0], [1]], [[0], [1]]],//w2
     [[[1], [0]], [[1], [0]], [[1], [0]]],//w3
     [[[0], [1]], [[0], [1]], [[1], [0]]],//w4
-    [[[0], [0]], [[0], [0]], [[0], [0]]]//w5
+    [[[0], [1]], [[0], [1]], [[0], [1]]],//w5
+    [[[0], [1]], [[0], [1]], [[1], [0]]],//w6
+    [[[0], [1]], [[0], [1]], [[1], [0]]],//w7
+    [[[0], [1]], [[1], [0]], [[0], [1]]],//w8
+    [[[0], [1]], [[0], [1]], [[0], [1]]],//w9
+    [[[1], [0]], [[0], [1]], [[1], [0]]],//w10
+    [[[0], [0]], [[0], [0]], [[0], [0]]]//w11
 ]
 var players = {
     1: {
@@ -108,7 +120,7 @@ for (var i = 0; i < games.length; i++) {
         players[games[i][j][1][1]].team.push(games[i][j][1][0]);
     }
 }
-
+// console.log(players)
 scoreArry = [];
 for (var i = 1; i <= 12; i++) {
     for (var j = 1; j <= 12; j++) {
@@ -160,7 +172,7 @@ function checkAlreadyRunOp(i, j, k, l) { // reduce dups
     return false;
 }
 function getScore(player, a, b, c) {
-    var checky = 1; // increase this if no value - blocks one person over play another
+    var checky = 2; // increase this if no value - blocks one person over play another
     var score = 0;
     var aT = 0;
     var bT = 0;
@@ -189,15 +201,15 @@ function getScore(player, a, b, c) {
     for (var i = 0; i < player.team.length; i++) {
         if (player.team[i] === a) {
             score = score - 1000000000000;
-            
+
             aT++;
         } else if (player.team[i] === b) {
             score = score + 1;
-            
+
             bT++;
         } else if (player.team[i] === c) {
             score = score + 1;
-            
+
             cT++;
         }
     }
@@ -247,3 +259,69 @@ for (var m = 0; m < 25; m++) {
     console.log(newArr[m])
 
 }
+arrPlayers = Object.keys(players).map((a, i) => {
+    var obj = players[a];
+    obj.number = a;
+    return obj;
+})
+
+var sortPlayers = arrPlayers.sort((a, b) => { return a.wins > b.wins ? -1 : 1 })
+var rankPlayers = sortPlayers.map((a, i) => {
+    var obj = a;
+    if (i === 0) {
+        obj.rank = 1;
+
+    } else {
+        if (sortPlayers[i].wins === sortPlayers[i - 1].wins) {
+            obj.rank = sortPlayers[i - 1].rank;
+
+        } else {
+
+            obj.rank = sortPlayers[i - 1].rank + 1;
+        }
+    }
+    return obj;
+})
+console.log(rankPlayers.map((a) => { return a.number + '-' + a.rank }))
+for (var m = 0; m < rankPlayers.length; m++) {
+    players[rankPlayers[m].number].rank = rankPlayers[m].rank;
+    players[rankPlayers[m].number].countBackPoints = 0;
+}
+for (var i = 0; i < games.length; i++) {
+    //weeks
+    for (var j = 0; j < games[i].length; j++) {
+        //game
+        // for (var k = 0; k < games[i][j].length; k++) {
+        if (Wins[i][j][0][0]) {
+
+            players[games[i][j][0][0]].countBackPoints = players[games[i][j][0][0]].countBackPoints + players[games[i][j][1][0]].rank + players[games[i][j][1][1]].rank;
+            players[games[i][j][0][1]].countBackPoints = players[games[i][j][0][1]].countBackPoints + players[games[i][j][1][0]].rank + players[games[i][j][1][1]].rank;
+        }
+        if (Wins[i][j][1][0]) {
+
+            players[games[i][j][1][0]].countBackPoints = players[games[i][j][1][0]].countBackPoints + players[games[i][j][0][0]].rank + players[games[i][j][0][1]].rank;
+            players[games[i][j][1][1]].countBackPoints = players[games[i][j][1][1]].countBackPoints + players[games[i][j][0][0]].rank + players[games[i][j][0][1]].rank;
+
+        }
+    }
+}
+console.log(players)
+arrPlayers2 = Object.keys(players).map((a, i) => {
+    var obj = players[a];
+    obj.number = a;
+    return obj;
+})
+var sortPlayers2 = arrPlayers2.sort((a, b) => { 
+    if(a.wins>b.wins){
+        return -1;
+    }else if(a.wins===b.wins){
+        if(a.countBackPoints<b.countBackPoints){
+            return -1;
+        }else{
+            return 1;
+        }
+    }else{
+        return 1;
+    }
+})
+sortPlayers2.map((a) => { console.log(a.number + ' - ' + a.rank + ' - '+a.countBackPoints);return 0 })
