@@ -285,7 +285,8 @@ var rankPlayers = sortPlayers.map((a, i) => {
 console.log(rankPlayers.map((a) => { return a.number + '-' + a.rank }))
 for (var m = 0; m < rankPlayers.length; m++) {
     players[rankPlayers[m].number].rank = rankPlayers[m].rank;
-    players[rankPlayers[m].number].countBackPoints = 0;
+    players[rankPlayers[m].number].countBackWinPoints = 0;
+    players[rankPlayers[m].number].countBackLoosePoints = 0;
 }
 for (var i = 0; i < games.length; i++) {
     //weeks
@@ -293,15 +294,20 @@ for (var i = 0; i < games.length; i++) {
         //game
         // for (var k = 0; k < games[i][j].length; k++) {
         if (Wins[i][j][0][0]) {
-
-            players[games[i][j][0][0]].countBackPoints = players[games[i][j][0][0]].countBackPoints + players[games[i][j][1][0]].rank + players[games[i][j][1][1]].rank;
-            players[games[i][j][0][1]].countBackPoints = players[games[i][j][0][1]].countBackPoints + players[games[i][j][1][0]].rank + players[games[i][j][1][1]].rank;
+            //winners
+            players[games[i][j][0][0]].countBackWinPoints = players[games[i][j][0][0]].countBackWinPoints + (players[games[i][j][1][0]].rank + players[games[i][j][1][1]].rank) - (players[games[i][j][0][0]].rank + players[games[i][j][0][1]].rank);
+            players[games[i][j][0][1]].countBackWinPoints = players[games[i][j][0][1]].countBackWinPoints + (players[games[i][j][1][0]].rank + players[games[i][j][1][1]].rank) - (players[games[i][j][0][0]].rank + players[games[i][j][0][1]].rank);
+            //losers
+            players[games[i][j][1][0]].countBackLoosePoints = players[games[i][j][1][0]].countBackLoosePoints + (players[games[i][j][1][0]].rank + players[games[i][j][1][1]].rank) - (players[games[i][j][0][0]].rank + players[games[i][j][0][1]].rank);
+            players[games[i][j][1][1]].countBackLoosePoints = players[games[i][j][1][1]].countBackLoosePoints + (players[games[i][j][1][0]].rank + players[games[i][j][1][1]].rank) - (players[games[i][j][0][0]].rank + players[games[i][j][0][1]].rank);
         }
         if (Wins[i][j][1][0]) {
-
-            players[games[i][j][1][0]].countBackPoints = players[games[i][j][1][0]].countBackPoints + players[games[i][j][0][0]].rank + players[games[i][j][0][1]].rank;
-            players[games[i][j][1][1]].countBackPoints = players[games[i][j][1][1]].countBackPoints + players[games[i][j][0][0]].rank + players[games[i][j][0][1]].rank;
-
+            //winners
+            players[games[i][j][1][0]].countBackWinPoints = players[games[i][j][1][0]].countBackWinPoints + (players[games[i][j][0][0]].rank + players[games[i][j][0][1]].rank) - (players[games[i][j][1][0]].rank + players[games[i][j][1][1]].rank);
+            players[games[i][j][1][1]].countBackWinPoints = players[games[i][j][1][1]].countBackWinPoints + (players[games[i][j][0][0]].rank + players[games[i][j][0][1]].rank) - (players[games[i][j][1][0]].rank + players[games[i][j][1][1]].rank);
+            //losers
+            players[games[i][j][0][0]].countBackLoosePoints = players[games[i][j][0][0]].countBackLoosePoints + (players[games[i][j][0][0]].rank + players[games[i][j][0][1]].rank) - (players[games[i][j][1][0]].rank + players[games[i][j][1][1]].rank);
+            players[games[i][j][0][1]].countBackLoosePoints = players[games[i][j][0][1]].countBackLoosePoints + (players[games[i][j][0][0]].rank + players[games[i][j][0][1]].rank) - (players[games[i][j][1][0]].rank + players[games[i][j][1][1]].rank);
         }
     }
 }
@@ -311,17 +317,17 @@ arrPlayers2 = Object.keys(players).map((a, i) => {
     obj.number = a;
     return obj;
 })
-var sortPlayers2 = arrPlayers2.sort((a, b) => { 
-    if(a.wins>b.wins){
+var sortPlayers2 = arrPlayers2.sort((a, b) => {
+    if (a.wins > b.wins) {
         return -1;
-    }else if(a.wins===b.wins){
-        if(a.countBackPoints<b.countBackPoints){
+    } else if (a.wins === b.wins) {
+        if (a.countBackPoints < b.countBackPoints) {
             return -1;
-        }else{
+        } else {
             return 1;
         }
-    }else{
+    } else {
         return 1;
     }
 })
-sortPlayers2.map((a) => { console.log(a.number + ' - ' + a.rank + ' - '+a.countBackPoints);return 0 })
+sortPlayers2.map((a) => { console.log(a.number + ' - ' + a.rank + ' - ' + a.countBackWinPoints + ' - '+a.countBackLoosePoints); return 0 })
